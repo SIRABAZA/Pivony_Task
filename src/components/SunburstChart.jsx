@@ -31,8 +31,10 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
       }
 
       const depth = node.depth;
-      const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
-      const color = colors[depth % colors.length];
+      const colors = ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"];
+      // Adjust color index to start with second color for level 1
+      const colorIndex = (depth - 1) % colors.length;
+      const color = colors[colorIndex >= 0 ? colorIndex : 0];
 
       nodes.push({
         label: node.data.name,
