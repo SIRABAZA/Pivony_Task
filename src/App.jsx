@@ -69,25 +69,22 @@ function App() {
             </div>
           </div>
         </div>
-
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Chart Legend
           </h2>
           <div className="flex flex-wrap gap-3">
-            {["Level 1", "Level 2", "Level 3", "Level 4", "Level 5"].map(
-              (level, index) => (
-                <div key={level} className="flex items-center">
-                  <div
-                    className="w-4 h-4 rounded-full mr-2"
-                    style={{
-                      backgroundColor: COLORS[index],
-                    }}
-                  ></div>
-                  <span className="text-sm text-gray-700">{level}</span>
-                </div>
-              )
-            )}
+            {["Level 1", "Level 2", "Level 3"].map((level, index) => (
+              <div key={level} className="flex items-center">
+                <div
+                  className="w-4 h-4 rounded-full mr-2"
+                  style={{
+                    backgroundColor: COLORS[index],
+                  }}
+                ></div>
+                <span className="text-sm text-gray-700">{level}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
