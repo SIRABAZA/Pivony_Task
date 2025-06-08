@@ -10,13 +10,10 @@ export const useSunburstNavigation = (initialData) => {
 
     if (segment.originalNode?.data?.children) {
       setCurrentRoot(segment.originalNode.data);
-      setBreadcrumbs([
-        ...breadcrumbs,
-        {
-          name: segment.label,
-          data: segment.originalNode.data,
-        },
-      ]);
+      setBreadcrumbs([...breadcrumbs, {
+        name: segment.label,
+        data: segment.originalNode.data,
+      }]);
     }
   };
 

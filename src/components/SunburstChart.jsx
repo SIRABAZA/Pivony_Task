@@ -22,17 +22,12 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
     root.each((node) => {
       if (node.data.name === data.name) return;
 
-      // Filter nodes based on the keyword
-      if (
-        filterKeyword &&
-        !node.data.name.toLowerCase().includes(filterKeyword.toLowerCase())
-      ) {
+      if (filterKeyword && !node.data.name.toLowerCase().includes(filterKeyword.toLowerCase())) {
         return;
       }
 
       const depth = node.depth;
       const colors = ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"];
-      // Adjust color index to start with second color for level 1
       const colorIndex = (depth - 1) % colors.length;
       const color = colors[colorIndex >= 0 ? colorIndex : 0];
 
@@ -138,10 +133,10 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
     cutout: "50%",
     plugins: {
       tooltip: {
-        enabled: false, // Disable default tooltip
+        enabled: false,
       },
       legend: {
-        display: false, // Hide legend as we're using custom tooltips
+        display: false,
       },
     },
     onHover: (event, chartElements) => {
@@ -155,8 +150,8 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
       animateRotate: true,
       animateScale: true,
     },
-    rotation: -90, // Start from top
-    circumference: 360, // Full circle
+    rotation: -90,
+    circumference: 360,
   };
 
   return (
