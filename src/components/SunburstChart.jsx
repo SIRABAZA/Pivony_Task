@@ -22,25 +22,37 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
     root.each((node) => {
       if (node.data.name === data.name) return;
 
-      if (filterKeyword && !node.data.name.toLowerCase().includes(filterKeyword.toLowerCase())) {
-        return;
-      }
-
       const depth = node.depth;
       const colors = ["#36A2EB", "#FF6384", "#FFCE56", "#4BC0C0", "#9966FF"];
       const colorIndex = (depth - 1) % colors.length;
       const color = colors[colorIndex >= 0 ? colorIndex : 0];
 
-      nodes.push({
+      const nodeData = {
         label: node.data.name,
         value: node.value || 0,
         depth: depth,
         parent: node.parent?.data.name || null,
         originalNode: node,
-      });
-      labels.push(node.data.name);
-      backgroundColors.push(color);
-      borderColors.push("#ffffff");
+      };
+
+      nodes.push(nodeData);
+
+      // Check if this node or any of its children match the filter
+      const matchesFilter = !filterKeyword || 
+        node.data.name.toLowerCase().includes(filterKeyword.toLowerCase()) ||
+        (node.data.children && node.data.children.some(child => 
+          child.name.toLowerCase().includes(filterKeyword.toLowerCase())
+        ));
+
+      if (matchesFilter) {
+        labels.push(node.data.name);
+        backgroundColors.push(color);
+        borderColors.push("#ffffff");
+      } else {
+        labels.push("");
+        backgroundColors.push("transparent");
+        borderColors.push("transparent");
+      }
     });
 
     return {
@@ -48,14 +60,21 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
         labels,
         datasets: [
           {
-            data: nodes.map((node) => node.value),
+            data: nodes.map((node, index) => {
+              const matchesFilter = !filterKeyword || 
+                node.label.toLowerCase().includes(filterKeyword.toLowerCase()) ||
+                (node.originalNode.data.children && node.originalNode.data.children.some(child => 
+                  child.name.toLowerCase().includes(filterKeyword.toLowerCase())
+                ));
+              return matchesFilter ? node.value : 0;
+            }),
             backgroundColor: backgroundColors,
             borderColor: borderColors,
             borderWidth: 2,
             hoverBorderWidth: 3,
             hoverBorderColor: "#000000",
             hoverBackgroundColor: backgroundColors.map(color => 
-              color.replace(/[\d,]+\)$/, '0.8)')
+              color === "transparent" ? "transparent" : color.replace(/[\d,]+\)$/, '0.8)')
             ),
           },
         ],
@@ -125,7 +144,15 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
 
     if (activeElements.length > 0) {
       const clickedElement = nodes[activeElements[0].index];
-      onSegmentClick(clickedElement);
+      const matchesFilter = !filterKeyword || 
+        clickedElement.label.toLowerCase().includes(filterKeyword.toLowerCase()) ||
+        (clickedElement.originalNode.data.children && clickedElement.originalNode.data.children.some(child => 
+          child.name.toLowerCase().includes(filterKeyword.toLowerCase())
+        ));
+
+      if (matchesFilter) {
+        onSegmentClick(clickedElement);
+      }
     }
   };
 
@@ -142,7 +169,15 @@ const SunburstChart = ({ data, onSegmentClick, filterKeyword }) => {
     onHover: (event, chartElements) => {
       const canvas = event.native?.target;
       if (canvas) {
-        canvas.style.cursor = chartElements[0] ? "pointer" : "default";
+        const isVisible = chartElements[0] && 
+          (!filterKeyword || 
+           nodes[chartElements[0].index].label.toLowerCase().includes(filterKeyword.toLowerCase()) ||
+           (nodes[chartElements[0].index].originalNode.data.children && 
+            nodes[chartElements[0].index].originalNode.data.children.some(child => 
+              child.name.toLowerCase().includes(filterKeyword.toLowerCase())
+            ))
+          );
+        canvas.style.cursor = isVisible ? "pointer" : "default";
       }
     },
     maintainAspectRatio: false,

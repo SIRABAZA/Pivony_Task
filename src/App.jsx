@@ -5,17 +5,30 @@ import Breadcrumbs from "./components/Breadcrumbs";
 import { useSunburstNavigation } from "./hooks/useSunburstNavigation";
 import { sampleData } from "./data/sampleData";
 import { COLORS } from "./utils/chartUtils";
+import useDebounce from "./hooks/useDebounce";
 
 function App() {
   const [filter, setFilter] = useState("");
+  const debouncedFilter = useDebounce(filter, 300);
+
   const {
     currentRoot,
     breadcrumbs,
     selectedSegment,
-    handleSegmentClick,
-    handleResetView,
+    handleSegmentClick: originalHandleSegmentClick,
+    handleResetView: originalHandleResetView,
     handleBreadcrumbClick,
   } = useSunburstNavigation(sampleData);
+
+  const handleSegmentClick = (segment) => {
+    setFilter("");
+    originalHandleSegmentClick(segment);
+  };
+
+  const handleResetView = () => {
+    setFilter(""); 
+    originalHandleResetView();
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -51,7 +64,7 @@ function App() {
               <SunburstChart
                 data={currentRoot}
                 onSegmentClick={handleSegmentClick}
-                filterKeyword={filter}
+                filterKeyword={debouncedFilter}
               />
             </div>
 
